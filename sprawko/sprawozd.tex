@@ -1,0 +1,46 @@
+\documentclass{article} 
+\usepackage{polski} %moze wymagac dokonfigurowania latexa, ale jest lepszy niż standardowy babel'owy [polish] 
+\usepackage[utf8]{inputenc} 
+\usepackage[OT4]{fontenc} 
+\usepackage{graphicx,color} %include pdf's (and png's for raster graphics... avoid raster graphics!) 
+\usepackage{url} 
+\usepackage[pdftex,hyperfootnotes=false,pdfborder={0 0 0}]{hyperref} %za wszystkimi pakietami; pdfborder nie wszedzie tak samo zaimplementowane bo specyfikacja nieprecyzyjna; pod miktex'em po prostu nie widac wtedy ramek
+
+
+\input{_ustawienia.tex}
+
+%\title{Sprawozdanie z laboratorium:\\Metaheurystyki i Obliczenia Inspirowane Biologicznie}
+%\author{}
+%\date{}
+
+
+\begin{document}
+
+\input{_tytulowa}
+
+
+\section{Wstęp}
+Celem tego sprawozdania jest przedstawienie teoretycznego opracowania metody heurystycznej rozwiązującej problem sekwencjonowania łańcuchów DNA z błędami pozytywnymi oraz negatywnymi w czasie wielomianowym. Alogrytm mając dany na wejściu zbiór $S$ słów o długości $l$ nad alfabetem $\{A, C, G, T\}$, długość $n$ sekwencji oryginalnej, powinien zwrócić sekwencję o długości nie większej niż $n$ zawierającą maksymalną liczbę słów z $S$.
+
+\section{Algorytm}
+\subsection{Opis}
+Do rozwiązania tego problemu zbudujemy graf, którego wierzchołkami będą słowa ze zbioru $S$, a wartości łuku między wierzchołkami będą równe przesunięciu między tymi słowami. Przykładowo łuk z wierzchołka ACCGT do wierzchołka CCGTC będzie miał wartość 1 a do wierzchołka GTCGT wartość 3. Na skonstruowanym w ten sposób grafie rozwiązujemy problem komiwojażera maksymalizujący liczbę odwiedzonych wierzchołków przy ograniczeniu na sumę wartości wykorzystnych łuków, która nie może być większa od $n - l$, gdyż w przeciwnym razie na wyjściu otrzymamy sekwencję dłuższą niż oryginalna.
+Aby ograniczyć ponowne odwiedzanie tych samych wierzchołków, będziemy zwiększać wartość łuków prowadzących do odwiedzonych już wierzchołków o pewną stałą $C$.
+Do rozwiązania problemu komiwojażera posłużymy się przeszukiwaniem wiązkowym oraz algorytmem wspinaczki.
+\subsection{Lista kroków}
+\begin{enumerate}
+    \item Zbudowanie grafu
+    \item Zaczynamy z losowego wierzchołka
+    \item Znajdujemy $k$ najbliższych miast
+    \item Do każdej z $k$ dotyczasowych ścieżek liczymy odległość po dodaniu każdego z wierzchołków z uwzględnieniem kary za powtórne odwiedzenie tego samego wierzhołka.Wybieramy $k$ najkrótszych ścieżek
+    \item Powtarzamy krok 4 aż koszt ścieżek przekroczy krytyczną wartość $n-l$
+    \item Dla każdej z $k$ wygenerowanych ścieżek sprawdzamy które przestawienie parami pozwoli maksymalnie zmniejszyć koszt ścieżki i wykonujemy je
+    \item Powarzamy krok 6 aż do uzyskania lokalnego optimum
+    \item Ponownie wykonujemy przeszukiwanie wiązkowe
+\end{enumerate}
+\subsection{Złożoność obliczeniowa}
+Złożoność pierwszego przeszukiwania wiązkowego jest równa $O(k*|S|^2)$ \\
+Złożoność algorytmu wspinaczkowego (jeszcze nie wiem) \\
+Złożoność drugiego przeszukiwania wiązkowego $O(k*|S|^2)$
+\end{document}
+
