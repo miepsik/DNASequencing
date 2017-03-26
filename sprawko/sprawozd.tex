@@ -20,11 +20,26 @@
 
 
 \section{Wstęp}
-Celem tego sprawozdania jest przedstawienie teoretycznego opracowania metody heurystycznej rozwiązującej problem sekwencjonowania łańcuchów DNA z błędami pozytywnymi oraz negatywnymi w czasie wielomianowym. Alogrytm mając dany na wejściu zbiór $S$ słów o długości $l$ nad alfabetem $\{A, C, G, T\}$, długość $n$ sekwencji oryginalnej, powinien zwrócić sekwencję o długości nie większej niż $n$ zawierającą maksymalną liczbę słów z $S$.
+Celem tego sprawozdania jest przedstawienie teoretycznego opracowania metody heurystycznej rozwiązującej problem sekwencjonowania łańcuchów DNA z błędami pozytywnymi oraz negatywnymi w czasie wielomianowym. Alogrytm mając dany na wejściu zbiór oligonukleotydów (tj. ciągów nukleotydów: adeniny, tyminy, guaniny i cytozyny), długość sekwencji oryginalnej, powinien zwrócić sekwencję jak najbardziej zbliżoną do oryginalnej.
+
+\section{Sformułowanie problemu}
+Elementy zbioru oligonukleotydów $S$ zostały zakodowane jako słowa o długości $l$ nad alfabetem nukleotydów $\{A, C, G, T\}$.
+Moc zbioru $S$ wynosi $n$.
+
+W przypadku idealnym kolejne słowa pokrywają się na $l-1$ pozycjach; innymi słowy słowa powstałe przez usunięcie odpowiednio pierwszej lub ostatniej litery z dwóch następujących po sobie elementów sekwencji wynikowej są równe.
+W takim wypadku sekwencja wyjściowa ma długość równą mocy zbiory $S$.
+
+Ze względu na charakter źródła zbiorów wejściowych, $S$ może zawierać błędy dwojakiej natury.
+Pojawienie się dodatkowych słów, nieobecnych w przypadku idealnym, nazywa się błędem pozytywnym, a brakujące dane (tj. brak słów bezpośrednio następnych, brak powtórzeń słów) --- negatywnym.
+W przypadku obecności jedynie błędów negatywnych sekwencja wyjściowa nie jest dłuższa niż $n$ i zawiera wszystkie słowa z $S$; alternatywnie, w obecności jedynie błędów pozytywnych, sekwencja ma długość $n$ i zawiera $n-l+1$ słów z $S$.
+W przypadku ogólnym, powinna zawierać maksymalną liczbę słów z $S$ oraz nie powinna być dłuższa niż $n$.
+
+Problem można przedstawić jako skierowany graf pełny $G=(S,\lbrace(s_i,s_j):(s_i,s_j)\in S\times S \land s_i\neq s_j\rbrace)$, który z każdym wierzchołkiem ma utożsamiony  zysk równy $1$, a z każdym łukiem --- koszt odpowiadający liczbie niepokrywających się pozycji $k$ (w przypadku idealnym słowa pokrywają się na $l-1$ pozycjach, a ogólnie na $l-k$; $k\in\lbrace1,2,...,l\rbrace$).
+Jako taki znalezienie najlepszej sekwencji sprowadza się do rozwiązania wariantu selektywnego problemu komiwojażera nie wymagające utworzenia cyklu, a jedynie ścieżkę.
 
 \section{Algorytm}
 \subsection{Opis}
-Do rozwiązania tego problemu zbudujemy graf, którego wierzchołkami będą słowa ze zbioru $S$, a wartości łuku między wierzchołkami będą równe przesunięciu między tymi słowami. Przykładowo łuk z wierzchołka ACCGT do wierzchołka CCGTC będzie miał wartość 1 a do wierzchołka GTCGT wartość 3. Na skonstruowanym w ten sposób grafie rozwiązujemy problem komiwojażera maksymalizujący liczbę odwiedzonych wierzchołków przy ograniczeniu na sumę wartości wykorzystnych łuków, która nie może być większa od $n - l$, gdyż w przeciwnym razie na wyjściu otrzymamy sekwencję dłuższą niż oryginalna.
+Do rozwiązania tego problemu zbudujemy graf, którego wierzchołkami będą słowa ze zbioru $S$, a wartości łuku między wierzchołkami będą równe przesunięciu między tymi słowami. Przykładowo łuk z wierzchołka ACCGT do wierzchołka CCGTC będzie miał wartość 1 a do wierzchołka GTCGT wartość 3. Na skonstruowanym w ten sposób grafie rozwiązujemy problem komiwojażera maksymalizujący liczbę odwiedzonych wierzchołków przy ograniczeniu na sumę wartości wykorzystywanych łuków, która nie może być większa od $n - l$, gdyż w przeciwnym razie na wyjściu otrzymamy sekwencję dłuższą niż oryginalna.
 Aby ograniczyć ponowne odwiedzanie tych samych wierzchołków, będziemy zwiększać wartość łuków prowadzących do odwiedzonych już wierzchołków o pewną stałą $C$.
 Do rozwiązania problemu komiwojażera posłużymy się przeszukiwaniem wiązkowym oraz algorytmem wspinaczki.
 \subsection{Lista kroków}
@@ -32,10 +47,10 @@ Do rozwiązania problemu komiwojażera posłużymy się przeszukiwaniem wiązkow
     \item Zbudowanie grafu
     \item Zaczynamy z losowego wierzchołka
     \item Znajdujemy $k$ najbliższych miast
-    \item Do każdej z $k$ dotyczasowych ścieżek liczymy odległość po dodaniu każdego z wierzchołków z uwzględnieniem kary za powtórne odwiedzenie tego samego wierzhołka.Wybieramy $k$ najkrótszych ścieżek
+    \item Do każdej z $k$ dotychczasowych ścieżek liczymy odległość po dodaniu każdego z wierzchołków z uwzględnieniem kary za powtórne odwiedzenie tego samego wierzchołka.Wybieramy $k$ najkrótszych ścieżek
     \item Powtarzamy krok 4 aż koszt ścieżek przekroczy krytyczną wartość $n-l$
     \item Dla każdej z $k$ wygenerowanych ścieżek sprawdzamy które przestawienie parami pozwoli maksymalnie zmniejszyć koszt ścieżki i wykonujemy je
-    \item Powarzamy krok 6 aż do uzyskania lokalnego optimum
+    \item Powtarzamy krok 6 aż do uzyskania lokalnego optimum
     \item Ponownie wykonujemy przeszukiwanie wiązkowe
 \end{enumerate}
 \subsection{Złożoność obliczeniowa}
