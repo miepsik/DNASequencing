@@ -34,7 +34,7 @@ Pojawienie się dodatkowych słów, nieobecnych w przypadku idealnym, nazywa si�
 W przypadku obecności jedynie błędów negatywnych sekwencja wyjściowa nie jest dłuższa niż $n$ i zawiera wszystkie słowa z $S$; alternatywnie, w obecności jedynie błędów pozytywnych, sekwencja ma długość $n$ i zawiera $n-l+1$ słów z $S$.
 W przypadku ogólnym, powinna zawierać maksymalną liczbę słów z $S$ oraz nie powinna być dłuższa niż $n$.
 
-Problem można przedstawić jako skierowany graf pełny $G=(S,\lbrace(s_i,s_j):(s_i,s_j)\in S\times S \land s_i\neq s_j\rbrace)$, który z każdym wierzchołkiem ma utożsamiony  zysk równy $1$, a z każdym łukiem --- koszt odpowiadający liczbie niepokrywających się pozycji $k$ (w przypadku idealnym słowa pokrywają się na $l-1$ pozycjach, a ogólnie na $l-k$; $k\in\lbrace1,2,...,l\rbrace$).
+Problem można przedstawić jako skierowany graf pełny $G=(S,\lbrace(s_i,s_j):(s_i,s_j)\in S\times S \land s_i\neq s_j\rbrace)$, który z każdym wierzchołkiem ma utożsamiony  zysk równy $1$, a z każdym łukiem --- koszt odpowiadający liczbie niepokrywających się pozycji $k_{i,j}$ (w przypadku idealnym słowa pokrywają się na $l-1$ pozycjach, a ogólnie na $l-k_{i,j}$; $k_{i,j}\in\lbrace1,2,...,l\rbrace$).
 Jako taki znalezienie najlepszej sekwencji sprowadza się do rozwiązania wariantu selektywnego problemu komiwojażera nie wymagające utworzenia cyklu, a jedynie ścieżkę.
 
 \section{Algorytm}
@@ -46,16 +46,23 @@ Do rozwiązania problemu komiwojażera posłużymy się przeszukiwaniem wiązkow
 \begin{enumerate}
     \item Zbudowanie grafu
     \item Zaczynamy z losowego wierzchołka
-    \item Znajdujemy $k$ najbliższych miast
+    \item Znajdujemy $k$ najbliższych wierzchołków
     \item Do każdej z $k$ dotychczasowych ścieżek liczymy odległość po dodaniu każdego z wierzchołków z uwzględnieniem kary za powtórne odwiedzenie tego samego wierzchołka.Wybieramy $k$ najkrótszych ścieżek
     \item Powtarzamy krok 4 aż koszt ścieżek przekroczy krytyczną wartość $n-l$
     \item Dla każdej z $k$ wygenerowanych ścieżek sprawdzamy które przestawienie parami pozwoli maksymalnie zmniejszyć koszt ścieżki i wykonujemy je
-    \item Powtarzamy krok 6 aż do uzyskania lokalnego optimum
-    \item Ponownie wykonujemy przeszukiwanie wiązkowe
+    \item Powtarzamy krok 6 $i$ razy, bądź aż do uzyskania lokalnego optimum
+    \item Jeśli długość ścieżki jest mniejsza od $n-l$ o więcej niż $z$ to ponownie wykonujemy przeszukiwanie wiązkowe w celu rozszerzenia aktualnych ścieżek. W przeciwnym wypadku dokonujemy pełnego przeglądu.
 \end{enumerate}
 \subsection{Złożoność obliczeniowa}
-Złożoność pierwszego przeszukiwania wiązkowego jest równa $O(k*|S|^2)$ \\
-Złożoność algorytmu wspinaczkowego (jeszcze nie wiem) \\
-Złożoność drugiego przeszukiwania wiązkowego $O(k*|S|^2)$
-\end{document}
+Podczas każdej iteracji przeszukiwania wiązkowego badane jest $n$ możliwych rozszerzeń każdej z $k$ ścieżek ($k<n$), a ponieważ maksymalna długość ścieżki jest równa maksymalnej długości sekwencji --- złożoność pierwszego przeszukiwania wiązkowego jest równa $O(k*|S|^2)$. Złożoność drugiego przeszukiwania wiązkowego wynosi $O(k*z*|S|)$, dlatego że w najgorszym przypadku należy znaleźć ścieżkę o długości $z$. Aby były spełnione warunki zadania, $z$ powinno spełniać następującą zależność: $kn(z-1)>=(z-1)!$.
+
+Algorytm wspinaczkowy wymaga co najwyżej ${{n}\choose{2}}\sim n(n-1)$ zamian podczas każdej iteracji; ponieważ w ogólności istnieje nie więcej niż $n!$ możliwych permutacji sekwencji, zaproponowano by ograniczyć liczbę iteracji od góry pewną stałą $i$ ($i<n!$). Złożoność takiego algorytmu wspinaczkowego jest równa $O(i*|S|^2)$.
+
+Złożoność całego algorytmu jest więc równa $O((k*|S|+k*z+i*|S|)*|S|)$. Stałe k,z oraz i najłatwiej byłoby wyznaczyć eksperymentalnie.
+\section{Usprawnienia}
+\subsection{brak błędów negatywnych}
+Gdyby założyć, że w danym zestawie danych jedyne błędy jakie występują to błędy pozytywne, moglibyśmy wówczas podczas przeszukiwania wiązkowego wycofywać się z wierzchołków, które są odległe o więcej niż $1$ od każdego innego wierzchołka. Pozwoliłoby to ominąć część błędów pozytywnych. Moglibyśmy także brać pod uwagę tylko i wyłącznie łuki o wartości $1$, jednak wówczas algorytm przeszukiwania wiązkowego mógłby wielokrotnie przechodzić po tych samych łukach, odwiedzając kilkukrotnie te same wierzchołki, pomijając jednocześnie inne. Z tego powodu sensowne wydaje się pozostawienie także łuków o większych wartościach. Próg powyżej którego łuki nie będą brane pod uwagę, zwiększający skuteczność algorytmu będzie zależny od topologii sieci utworzonej z łuków o wartości mniejszej bądź równej temu progowi. Jeśli sieć ta będzie odpowiednio gęsta, wówczas szansa na wielokrotne odwiedzanie tych samych wierzchołków spada. Optymalną gęstość takiej sieci najłatwiej będzie ustalić eksperymentalnie.
+\subsection{brak błędów pozytywnych}
+Przy założeniu, że w danym zestawie danych występują tylko i wyłącznie błędy negatywne algorytm powinien odwiedzić wszystkie wierzchołki, dlatego stała $C$, karająca za ponowne odwiedzenie tego samego wierzchołka może być wówczas znacznie wyższa, co spowoduje, że algorytm przeszukiwania wiązkowego znacznie rzadziej, bądź nigdy będzie odwiedzał te same wierzchołki, jeśli będą dostępne wierzchołki do tej pory nieodwiedzone. Nawet jeśli spowoduje to, że ścieżka przebiegać będzie w sposób odległy od optymalnego, istnieje spore prawdopodobieństwo, że zostanie ona poprawiona w drugim etapie czyli algorytmie wspinaczki.
+\end{document} 
 
