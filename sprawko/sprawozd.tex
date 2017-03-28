@@ -45,7 +45,7 @@ Do rozwiązania problemu komiwojażera posłużymy się przeszukiwaniem wiązkow
 \subsection{Lista kroków}
 \begin{enumerate}
     \item Zbudowanie grafu
-    \item Zaczynamy z losowego wierzchołka
+    \item Wylosowanie wierzchołka %nie byłoby sensowne wylosowanie k wierzchołków? byłoby to zgodne z duchem algorytmu...
     \item Znajdujemy $k$ najbliższych wierzchołków
     \item Do każdej z $k$ dotychczasowych ścieżek liczymy odległość po dodaniu każdego z wierzchołków z uwzględnieniem kary za powtórne odwiedzenie tego samego wierzchołka.Wybieramy $k$ najkrótszych ścieżek
     \item Powtarzamy krok 4 aż koszt ścieżek przekroczy krytyczną wartość $n-l$
