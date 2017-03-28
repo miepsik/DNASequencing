@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.2.7)  28 MAR 2017 11:17
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.2.7)  28 MAR 2017 11:44
 entering extended mode
 **sprawozd.tex
 (C:\Users\Damian\Desktop\Repozytoria\DNASequencing\sprawko\sprawozd.tex
@@ -548,15 +548,15 @@ Overfull \hbox (26.65083pt too wide) in paragraph at lines 50--51
 te-go sa-me-go wierz-choª-ka.Wybieramy
  []
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 67.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 69.
 [3] [4]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 67.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 69.
  (C:\Users\Damian\Desktop\Repozytoria\DNASequencing\sprawko\sprawozd.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 67.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 67.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 69.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 69.
 Package rerunfilecheck Info: File `sprawozd.out' has not changed.
-(rerunfilecheck)             Checksum: 86124E7ABBCB42DF1165AC591FB3E04B;546.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 67.
+(rerunfilecheck)             Checksum: F2CCBAD97A70405F3D94BC21F9A6918E;536.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 69.
  ) 
 Here is how much of TeX's memory you used:
  5602 strings out of 493921
@@ -565,7 +565,7 @@ Here is how much of TeX's memory you used:
  8817 multiletter control sequences out of 15000+200000
  10313 words of font info for 30 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
- 29i,6n,28p,1112b,401s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 29i,6n,28p,1122b,401s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Users/Damian/Downloads/MikTeX/Nowy folder/fonts/enc/dvips/pl/plme.enc}{C:
 /Users/Damian/Downloads/MikTeX/Nowy folder/fonts/enc/dvips/pl/plrm.enc}{C:/User
 s/Damian/Downloads/MikTeX/Nowy folder/fonts/enc/dvips/pl/plmi.enc}{C:/Users/Dam
@@ -580,7 +580,7 @@ nloads/MikTeX/Nowy folder/fonts/type1/public/pl/plr12.pfb><C:/Users/Damian/Down
 loads/MikTeX/Nowy folder/fonts/type1/public/pl/plr7.pfb><C:/Users/Damian/Downlo
 ads/MikTeX/Nowy folder/fonts/type1/public/pl/plr8.pfb><C:/Users/Damian/Download
 s/MikTeX/Nowy folder/fonts/type1/public/pl/plsy10.pfb>
-Output written on sprawozd.pdf (4 pages, 84046 bytes).
+Output written on sprawozd.pdf (4 pages, 84256 bytes).
 PDF statistics:
  116 PDF objects out of 1000 (max. 8388607)
  22 named destinations out of 1000 (max. 500000)
