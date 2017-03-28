@@ -1,8 +1,9 @@
 \BOOKMARK [1][-]{section.1}{Wstep}{}% 1
-\BOOKMARK [1][-]{section.2}{Algorytm}{}% 2
-\BOOKMARK [2][-]{subsection.2.1}{Opis}{section.2}% 3
-\BOOKMARK [2][-]{subsection.2.2}{Lista krok\363w}{section.2}% 4
-\BOOKMARK [2][-]{subsection.2.3}{Z\233ozonosc obliczeniowa}{section.2}% 5
-\BOOKMARK [1][-]{section.3}{Usprawnienia}{}% 6
-\BOOKMARK [2][-]{subsection.3.1}{brak b\233ed\363w negatywnych}{section.3}% 7
-\BOOKMARK [2][-]{subsection.3.2}{brak b\233ed\363w pozytywnych}{section.3}% 8
+\BOOKMARK [1][-]{section.2}{Sformu\233owanie problemu}{}% 2
+\BOOKMARK [1][-]{section.3}{Algorytm}{}% 3
+\BOOKMARK [2][-]{subsection.3.1}{Opis}{section.3}% 4
+\BOOKMARK [2][-]{subsection.3.2}{Lista krok\363w}{section.3}% 5
+\BOOKMARK [2][-]{subsection.3.3}{Z\233ozonosc obliczeniowa}{section.3}% 6
+\BOOKMARK [1][-]{section.4}{Usprawnienia}{}% 7
+\BOOKMARK [2][-]{subsection.4.1}{Tylko b\233edy pozytywne}{section.4}% 8
+\BOOKMARK [2][-]{subsection.4.2}{Tylko b\233edy negatywne}{section.4}% 9
