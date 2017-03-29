@@ -45,12 +45,11 @@ Do rozwiązania problemu komiwojażera posłużymy się przeszukiwaniem wiązkow
 \subsection{Lista kroków}
 \begin{enumerate}
     \item Zbudowanie grafu
-    \item Wylosowanie wierzchołka %nie byłoby sensowne wylosowanie k wierzchołków? byłoby to zgodne z duchem algorytmu...
-    \item Znajdujemy $k$ najbliższych wierzchołków
-    \item Do każdej z $k$ dotychczasowych ścieżek liczymy odległość po dodaniu każdego z wierzchołków z uwzględnieniem kary za powtórne odwiedzenie tego samego wierzchołka.Wybieramy $k$ najkrótszych ścieżek
-    \item Powtarzamy krok 4 aż koszt ścieżek przekroczy krytyczną wartość $n-l$
+    \item Wylosowanie $k$ początkowych wierzchołków
+    \item Do każdej z $k$ dotychczasowych ścieżek liczymy odległość po dodaniu każdego z wierzchołków z uwzględnieniem kary za powtórne odwiedzenie tego samego wierzchołka. Wybieramy $k$ najkrótszych ścieżek
+    \item Powtarzamy krok 3 aż koszt ścieżek przekroczy krytyczną wartość $n-l$
     \item Dla każdej z $k$ wygenerowanych ścieżek sprawdzamy które przestawienie parami pozwoli maksymalnie zmniejszyć koszt ścieżki i wykonujemy je
-    \item Powtarzamy krok 6 $i$ razy, bądź aż do uzyskania lokalnego optimum
+    \item Powtarzamy krok 5 $i$ razy, bądź aż do uzyskania lokalnego optimum
     \item Jeśli długość ścieżki jest mniejsza od $n-l$ o więcej niż $z$ to ponownie wykonujemy przeszukiwanie wiązkowe w celu rozszerzenia aktualnych ścieżek. W przeciwnym wypadku dokonujemy pełnego przeglądu.
 \end{enumerate}
 \subsection{Złożoność obliczeniowa}
