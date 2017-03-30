@@ -35,7 +35,7 @@ int calculateCost(int *path, int length) {
     return result;
 }
 
-void secondBeam(int **path, int *length) {
+/*void secondBeam(int **path, int *length) {
     int visited[K][n], cost[K], **best;
 #pragma omp parallel for
     for (int i = 0; i < K; i++)
@@ -51,9 +51,9 @@ void secondBeam(int **path, int *length) {
     for (int i = 0; i < K; i++)
         for (int j = 0; j < length[i]; j++)
             visited[i][path[i][j]] = 1;
-}
+} */
 
-void sortBest(int ** best){
+void sortBest(int **best){
     for (int k = K; k > 0; k--) {
         if (best[k][2] < best[k-1][2]) {
             int *tmp = best[k-1];
@@ -65,31 +65,24 @@ void sortBest(int ** best){
     }
 }
 
-void wiazkowy(){
-    int visited[K][n], **path, *length, cost[K] = {l}, **best;
-    length = (int*) malloc(K * sizeof(int));
-    path = (int**) malloc(K * sizeof(int*));
+void wiazkowy(int **path, int *length, int *cost){
+    int visited[K][n], **best;
     best = (int**) malloc((K+1) * sizeof(int*));
 
     for (int i = 0; i < K; i++){
-        path[i] = (int*) malloc((s+2) * sizeof(int));
         best[i] = (int*) malloc(3 * sizeof(int));
     }
 
     best[K] = (int*) malloc(3 * sizeof(int));
-    for (int i = 0; i < K; i++){
-        length[i] = 1;
-        cost[i] = l;
-    }
 
 #pragma omp parallel for
     for (int i = 0; i < K; i++)
         for (int j = 0; j < n; j++)
             visited[i][j] = 0;
 #pragma omp parallel for
-    for (int i = 0; i < K; i++){
-        path[i][0] = rand()%n;
-    }
+    for (int i = 0; i < K; i++)
+        for (int j = 0; j < length[i]; j++)
+            visited[i][path[i][j]] = 1;
     while (cost[0] < s) {
 #pragma omp parallel for
         for (int i = 0; i < K; i++) {
@@ -253,13 +246,31 @@ void multiPathHillClimber(int **path, int *length){
 int main() {
 
     readWords("test.txt");
-    wiazkowy();
+    int **path, *length, *cost;
+    path = (int**) malloc(K * sizeof(int*));
+    length = (int*) malloc(K * sizeof(int));
+    cost = (int*) malloc(K * sizeof(int));
+    for (int i = 0; i < K; i++) {
+        path[i] = (int*) malloc((s+2) * sizeof(int));
+        path[i][0] = rand()%n;
+        length[i] = 1;
+        cost[i] = l;
+    }
+
+    wiazkowy(path, length, cost);
 
 #pragma omp parallel for
     for (int i = 0; i < n; i++){
         free(graph[i]);
         free(words[i]);
     }
+#pragma omp parallel for
+    for (int i = 0; i < K; i++) {
+        free(path[i]);
+    }
+    free(path);
+    free(length);
+    free(cost);
     free(graph);
     free(words);
 
