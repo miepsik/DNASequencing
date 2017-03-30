@@ -18,15 +18,54 @@ int calculateDistance(char* a, char* b){
     return l;
 }
 
-void wiazkowy(){
-    int visited[K][n], path[K][s], length[K] = {1}, cost[K] = {l}, **best;
-    for (int i = 0; i < K; i++) {
-        length[i] = 1;
-        cost[i] = l;
+int calculateCostParallel(int *path, int length) {
+    int result = 0;
+#pragma omp parallel for reduction(+: result)
+    for (int i = 0; i < length; i++) {
+        result += graph[path[i]][path[i+1]];
     }
+    return result;
+}
+
+int calculateCost(int *path, int length) {
+    int result = 0;
+    for (int i = 0; i < length; ) 
+        result += graph[path[i]][path[i++]];
+    return result;
+}
+
+void secondBeam(int **path, int *length) {
+    int visited[K][n], cost[K], **best;
+#pragma omp parallel for
+    for (int i = 0; i < K; i++)
+        cost[i] = calculateCost(path[i], length[i]);
     best = (int**) malloc((K+1) * sizeof(int*));
     for (int i = 0; i <= K; i++)
         best[i] = (int*) malloc(3 * sizeof(int));
+#pragma omp parallel for
+    for (int i = 0; i < K; i++)
+        for (int j = 0; j < n; j++)
+            visited[i][j] = 0;
+#pragma omp parallel for
+    for (int i = 0; i < K; i++)
+        for (int j = 0; j < length[i]; j++)
+            visited[i][path[i][j]] = 1;
+}
+
+void wiazkowy(){
+    int visited[K][n], **path, *length, cost[K] = {l}, **best;
+    length = (int*) malloc(K * sizeof(int));
+    path = (int**) malloc(K * sizeof(int*));
+    best = (int**) malloc((K+1) * sizeof(int*));
+    for (int i = 0; i < K; i++){
+        path[i] = (int*) malloc((s+2) * sizeof(int));
+        best[i] = (int*) malloc(3 * sizeof(int));
+    }
+    best[K] = (int*) malloc(3 * sizeof(int));
+    for (int i = 0; i < K; i++){
+        length[i] = 1;
+        cost[i] = l;
+    }
 #pragma omp parallel for
     for (int i = 0; i < K; i++)
         for (int j = 0; j < n; j++)
