@@ -52,6 +52,18 @@ void secondBeam(int **path, int *length) {
             visited[i][path[i][j]] = 1;
 }
 
+void sortBest(int ** best){
+    for (int k = K; k > 0; k--) {
+        if (best[k][2] < best[k-1][2]) {
+            int *tmp = best[k-1];
+            best[k-1] = best[k];
+            best[k] = tmp;
+        } else {
+            break;
+        }
+    }
+}
+
 void wiazkowy(){
     int visited[K][n], **path, *length, cost[K] = {l}, **best;
     length = (int*) malloc(K * sizeof(int));
@@ -89,15 +101,14 @@ void wiazkowy(){
                     if (visited[i][j])
                         best[K][2] += Z;
                     best[K][1] = j;
-                    for (int k = K; k > 0; k--) {
-                        if (best[k][2] < best[k-1][2]) {
-                            int *tmp = best[k-1];
-                            best[k-1] = best[k];
-                            best[k] = tmp;
-                        } else {
-                            break;
-                        }
-                    }
+                    sortBest(best);
+
+                    best[K][0] = i;
+                    best[K][2] = cost[i] + graph[j][path[i][0]];
+                    if (visited[i][j])
+                        best[K][2] += Z;
+                    best[K][1] = -j;
+                    sortBest(best);
                 }
             }
         }
@@ -112,13 +123,25 @@ void wiazkowy(){
             if (best[i][0] != -1) {
                 newLength[i] = length[best[i][0]]+1;
                 cost[i] = best[i][2];
-                for (int j = 0; j < length[i]; j++) {
-                    newPath[i][j] = path[best[i][0]][j];
-                    printf("%d ", newPath[i][j]);
-                    visited[i][newPath[i][j]] = 1;
+                if (best[i][1] > 0) {
+                    for (int j = 0; j < length[i]; j++) {
+                        newPath[i][j] = path[best[i][0]][j];
+                        printf("%d ", newPath[i][j]);
+                        visited[i][newPath[i][j]] = 1;
+                    }
+                    newPath[i][newLength[i]-1] = best[i][1];
+                    printf("%d\n", best[i][1]);
+                } else {
+                    newPath[i][0] = -best[i][1];
+                    visited[i][newPath[i][0]] = 1;
+                    printf("%d ", newPath[i][0]);
+                    for (int j = 0; j < length[i]; j++) {
+                        newPath[i][j+1] = path[best[i][0]][j];
+                        visited[i][newPath[i][j+1]] = 1;
+                        printf("%d ", newPath[i][j+1]);
+                    }
+                    printf("\n");
                 }
-                newPath[i][newLength[i]-1] = best[i][1];
-                printf("%d\n", best[i][1]);
             }
         }
 #pragma omp parallel
