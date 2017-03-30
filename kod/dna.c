@@ -1,11 +1,12 @@
 #include<stdio.h>
 #include<stdlib.h>
-#include<omp.h>
+//#include<omp.h>
 #include<string.h>
 #include<unistd.h>
 
 #define K 3
 #define Z 2
+#define ITER 10
 
 int **graph, l, n, s;
 char **words;
@@ -13,7 +14,7 @@ char **words;
 int calculateDistance(char* a, char* b){
     for (int i = 1; i < l; i++){
        if (strncmp(a+i, b, l-i) == 0)
-          return i; 
+          return i;
     }
     return l;
 }
@@ -29,7 +30,7 @@ int calculateCostParallel(int *path, int length) {
 
 int calculateCost(int *path, int length) {
     int result = 0;
-    for (int i = 0; i < length; ) 
+    for (int i = 0; i < length; )
         result += graph[path[i]][path[i++]];
     return result;
 }
@@ -57,15 +58,18 @@ void wiazkowy(){
     length = (int*) malloc(K * sizeof(int));
     path = (int**) malloc(K * sizeof(int*));
     best = (int**) malloc((K+1) * sizeof(int*));
+
     for (int i = 0; i < K; i++){
         path[i] = (int*) malloc((s+2) * sizeof(int));
         best[i] = (int*) malloc(3 * sizeof(int));
     }
+
     best[K] = (int*) malloc(3 * sizeof(int));
     for (int i = 0; i < K; i++){
         length[i] = 1;
         cost[i] = l;
     }
+
 #pragma omp parallel for
     for (int i = 0; i < K; i++)
         for (int j = 0; j < n; j++)
@@ -151,7 +155,7 @@ void readWords(char* file){
         for (int j = 0; j < n; j++){
             if (i != j)
                 graph[i][j] = calculateDistance(words[i], words[j]);
-            else 
+            else
                 graph[i][i] = 99999999;
         }
     }
@@ -164,13 +168,78 @@ void readWords(char* file){
     //close(&fp);
 }
 
+void hillClimber(int *seq, int length, int *h){
+    int ocena=*h;
+    int o,I,J,omin=ocena;
+    I=J=-1;
+
+    for(int k=0 ; k<ITER ; k++){
+        for(int i=0 ; i<length ; i++){
+            for(int j=0 ; j<length ; j++){
+                if(i!=j){
+                    o=ocena;
+                    if(i+1==j){
+                    //i-1   i   j   j+1
+                        o+=graph[seq[j]][seq[i]] - graph[seq[i]][seq[j]];
+                        if(i>0) o+=graph[seq[i-1]][seq[j]] - graph[seq[i-1]][seq[i]];
+                        if(j<length-1) o+=graph[seq[i]][seq[j+1]] - graph[seq[j]][seq[j+1]];
+                    }
+                    else if(i-1==j){
+                    //j-1   j   i   i+1
+                        o+=graph[seq[i]][seq[j]] - graph[seq[j]][seq[i]];
+                        if(j>0) o+=graph[seq[j-1]][seq[i]] - graph[seq[j-1]][seq[j]];
+                        if(i<length-1) o+=graph[seq[j]][seq[i+1]] - graph[seq[i]][seq[i+1]];
+                    }
+                    else{
+                        if(i>0) o+=graph[seq[i-1]][seq[j]] - graph[seq[i-1]][seq[i]];
+                        if(j>0) o+=graph[seq[j-1]][seq[i]] - graph[seq[j-1]][seq[j]];
+                        if(i<length-1) o+=graph[seq[j]][seq[i+1]] - graph[seq[i]][seq[i+1]];
+                        if(j<length-1) o+=graph[seq[i]][seq[j+1]] - graph[seq[j]][seq[j+1]];
+                    }
+                    if(o<omin){
+                        I=i;
+                        J=j;
+                        omin=o;
+                    }
+                }
+            }
+        }
+
+        if(I!=-1 && J!=-1){
+            int tmp = seq[I];
+            seq[I] = seq[J];
+            seq[J] = tmp;
+            ocena = omin;
+            I=-1;
+            J=-1;
+        }
+        else{
+            break;
+        }
+    }
+    *h = ocena;
+}
+
+void multiPathHillClimber(int **path, int *length){
+    int cost[K];
+
+#pragma omp parallel for
+    for(int i=0 ; i<K ; i++){
+        hillClimber(path[i],length,cost[i]);
+    }
+}
+
 int main() {
+
     readWords("test.txt");
     wiazkowy();
+
+#pragma omp parallel for
     for (int i = 0; i < n; i++){
         free(graph[i]);
         free(words[i]);
     }
     free(graph);
     free(words);
+
 }
