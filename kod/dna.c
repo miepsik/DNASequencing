@@ -184,15 +184,15 @@ void readWords(char* file){
     //close(&fp);
 }
 
-void hillClimber(int *seq, int length, int *ocena){
-    int o,I,J,omin=(*ocena);
+void hillClimber(int *seq, int length, int ocena){
+    int o,I,J,omin=ocena;
     I=J=-1;
 
     for(int k=0 ; k<ITER ; k++){
         for(int i=0 ; i<length ; i++){
             for(int j=0 ; j<length ; j++){
                 if(i!=j){
-                    o=(*ocena);
+                    o=ocena;
                     if(i+1==j){
                     //i-1   i   j   j+1
                         o+=graph[seq[j]][seq[i]] - graph[seq[i]][seq[j]];
@@ -224,7 +224,7 @@ void hillClimber(int *seq, int length, int *ocena){
             int tmp = seq[I];
             seq[I] = seq[J];
             seq[J] = tmp;
-            (*ocena) = omin;
+            ocena = omin;
             I=-1;
             J=-1;
         }
@@ -239,7 +239,15 @@ void multiPathHillClimber(int **path, int *length){
 
 #pragma omp parallel for
     for(int i=0 ; i<K ; i++){
-        hillClimber(path[i],length,cost[i]);
+        cost[i] = calculateCost(path[i], length[i]);
+        hillClimber(path[i], length[i], cost[i]);
+    }
+    for (int i = 0; i < K; i++) {
+        printf("%d: ", i);
+        for (int j = 0; j < length[i]; j++) {
+            printf("%d ", path[i][j]);
+        }
+        printf("\n");
     }
 }
 
@@ -256,7 +264,6 @@ int main() {
         length[i] = 1;
         cost[i] = l;
     }
-
     wiazkowy(path, length, cost);
 
 #pragma omp parallel for
