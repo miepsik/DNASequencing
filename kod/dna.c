@@ -29,7 +29,7 @@ int calculateCostParallel(int *path, int length) {
 }
 
 int calculateCost(int *path, int length) {
-    printf("%d\n", length);
+    //printf("%d\n", length);
     int result = 0;
     for (int i = 0; i < length-1; i++)
         result += graph[path[i]][path[i+1]];
@@ -84,7 +84,7 @@ void wiazkowy(int **path, int *length, int *cost){
     for (int i = 0; i < K; i++)
         for (int j = 0; j < length[i]; j++)
             visited[i][path[i][j]] = 1;
-    while (cost[0] < s) {
+    while (calculateCostParallel(path[0], length[0]) < s) {
 #pragma omp parallel for
         for (int i = 0; i < K; i++) {
             best[i][2] = 999999999;
@@ -92,8 +92,8 @@ void wiazkowy(int **path, int *length, int *cost){
             best[i][0] = -1;
         }
         for (int i = 0; i < K; i++) {
-            printf("%d %d\n", length[i], cost[i]);
-            if (cost[i] < s){
+            //printf("%d %d\n", length[i], cost[i]);
+            if (calculateCostParallel(path[i], length[i]) < s){
                 for (int j = 0; j < n; j++) {
                     best[K][0] = i;
                     best[K][2] = cost[i] + graph[path[i][length[i]-1]][j];
@@ -152,6 +152,35 @@ void wiazkowy(int **path, int *length, int *cost){
     }
 }
 
+int repairPath(int *path, int length) {
+    if (calculateCostParallel(path, length) <= s)
+        return 0;
+    int last = calculateCost(path, length-1);
+    int first = calculateCost(path+1, length-1);
+    if (last <= s) {
+        if (first > s) {
+            return -1;
+        } else {
+            if (last >= first) {
+                return -1;
+            } else {
+                for (int i = 1; i < length; i++)
+                    path[i-1] = path[i];
+                return 1;
+            }
+        }
+    } else {
+        if (first <= s) {
+            for (int i = 1; i < length; i++)
+                path[i-1] = path[i];
+            return 1;
+        } else {
+            return -1;
+        }
+    }
+
+}
+
 void readWords(char* file){
     FILE *fp;
     fp = fopen(file, "r");
@@ -187,10 +216,8 @@ void readWords(char* file){
 }
 
 void hillClimber(int *seq, int length, int ocena){
-    printf("HELLO\n");
     int o,I,J,omin=ocena;
     I=J=-1;
-    printf("%d\n", length);
     for(int k=0 ; k<ITER ; k++){
         for(int i=0 ; i<length ; i++){
             for(int j=0 ; j<length ; j++){
@@ -245,13 +272,18 @@ void multiPathHillClimber(int **path, int *length){
         cost[i] = calculateCost(path[i], length[i]);
         hillClimber(path[i], length[i], cost[i]);
     }
-    for (int i = 0; i < K; i++) {
-        //printf("%d: ", i);
-        for (int j = 0; j < length[i]; j++) {
-            //printf("%d ", path[i][j]);
-        }
-        //printf("\n");
-    }
+}
+
+void mark(int *path, int length) {
+    int nodes[n];
+    for (int i = 0; i < n; i++)
+        nodes[n] = 0;
+    for (int i = 0; i < length; i++)
+        nodes[path[i]] = 1;
+    int sum = 0;
+    for (int i = 0; i < n; i++)
+        sum += nodes[i];
+    printf("Użyto %d oligonukleotydów, w tym %d unikatowych\n", length, sum);
 }
 
 int main() {
@@ -268,15 +300,29 @@ int main() {
         cost[i] = l;
     }
     wiazkowy(path, length, cost);
-    printf("FIRST OK\n");
+#pragma omp parallel for
+    for (int i = 0; i < K; i++){
+        while (repairPath(path[i], length[i] != 0)){
+            length[i]--;
+        }
+    }
     multiPathHillClimber(path, length);
-    printf("SECOND OK\n");
 #pragma omp parallel for
     for (int i = 0; i < K; i++){
         cost[i] = calculateCost(path[i], length[i]);
     }
-    printf("OK\n");
     wiazkowy(path, length, cost);
+#pragma omp parallel for
+    for (int i = 0; i < K; i++){
+        while (repairPath(path[i], length[i] != 0)) {
+            length[i]--;
+        }
+    }
+    for (int i = 0; i < K; i++) {
+        printf("%d: ", i);
+        mark(path[i], length[i]);
+    }
+
 #pragma omp parallel for
     for (int i = 0; i < n; i++){
         free(graph[i]);
