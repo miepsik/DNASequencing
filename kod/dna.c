@@ -3,15 +3,17 @@
 #include<omp.h>
 #include<string.h>
 #include<unistd.h>
+#include<time.h>
 
-#define K 3
-#define Z 2
-#define ITER 10
+#define K 8
+#define Z 5
+#define ITER 100
+#define FILES 52
 
 int **graph, l, n, s;
 char **words;
 
-int calculateDistance(char* a, char* b){
+int calculateDistance(char *a, char *b){
     for (int i = 1; i < l; i++){
        if (strncmp(a+i, b, l-i) == 0)
           return i;
@@ -53,6 +55,29 @@ int calculateCost(int *path, int length) {
         for (int j = 0; j < length[i]; j++)
             visited[i][path[i][j]] = 1;
 } */
+
+void fullSearch(int **path, int *length){
+#pragma omp parallel for
+    for (int i = 0; i < 1; i++) {
+        int z = s - l - calculateCost(path[i], length[i]);
+        if (z < 1)
+            continue;
+        int combinations[z];
+        for (int i = 0; i < z; i++)
+            combinations[i] = 0;
+        for (int i = 0; i <= z; i++) {
+            while (combinations[0] < n) {
+                
+                combinations[z-1]++;
+                int j = z-1;
+                while (combinations[j] == n) {
+                    combinations[j] = 0;
+                    combinations[--j]++;
+                }
+            }
+        }
+    }
+}
 
 void sortBest(int **best){
     for (int k = K; k > 0; k--) {
@@ -153,10 +178,10 @@ void wiazkowy(int **path, int *length, int *cost){
 }
 
 int repairPath(int *path, int length) {
-    if (calculateCostParallel(path, length) <= s)
+    if (calculateCostParallel(path, length) + l <= s)
         return 0;
-    int last = calculateCost(path, length-1);
-    int first = calculateCost(path+1, length-1);
+    int last = calculateCost(path, length-1) + l;
+    int first = calculateCost(path+1, length-1) + l;
     if (last <= s) {
         if (first > s) {
             return -1;
@@ -184,8 +209,8 @@ int repairPath(int *path, int length) {
 void readWords(char* file){
     FILE *fp;
     fp = fopen(file, "r");
-    fscanf(fp, "%d %d %d\n", &n, &l, &s);
-    printf("%d %d %d\n", n, l, s);
+    fscanf(fp, "%d %d %d\n", &s, &l, &n);
+    printf("%d;%d;%d;", n, l, s);
     graph = (int**) malloc(n * sizeof(int*));
 #pragma omp parallel for
     for (int i = 0; i < n; i++) {
@@ -274,68 +299,80 @@ void multiPathHillClimber(int **path, int *length){
     }
 }
 
-void mark(int *path, int length) {
-    int nodes[n];
-    for (int i = 0; i < n; i++)
-        nodes[n] = 0;
-    for (int i = 0; i < length; i++)
-        nodes[path[i]] = 1;
-    int sum = 0;
-    for (int i = 0; i < n; i++)
-        sum += nodes[i];
-    printf("Użyto %d oligonukleotydów, w tym %d unikatowych\n", length, sum);
+void mark(int **path, int *length) {
+    int max = 0, total;
+    for (int j = 0; j < K; j++) {
+        int nodes[n];
+        for (int i = 0; i < n; i++)
+            nodes[i] = 0;
+        for (int i = 0; i < length[j]; i++)
+            nodes[path[j][i]] = 1;
+        int sum = 0;
+        for (int i = 0; i < n; i++)
+            sum += nodes[i];
+        if (sum > max){
+            max = sum;
+            total = length[j];
+        }
+    }
+    printf("%d;%d\n", total, max);
 }
 
 int main() {
-
-    readWords("../dane/test0.txt");
-    int **path, *length, *cost;
-    path = (int**) malloc(K * sizeof(int*));
-    length = (int*) malloc(K * sizeof(int));
-    cost = (int*) malloc(K * sizeof(int));
-    for (int i = 0; i < K; i++) {
-        path[i] = (int*) malloc((2*s) * sizeof(int));
-        path[i][0] = rand()%n;
-        length[i] = 1;
-        cost[i] = l;
-    }
-    wiazkowy(path, length, cost);
-#pragma omp parallel for
-    for (int i = 0; i < K; i++){
-        while (repairPath(path[i], length[i] != 0)){
-            length[i]--;
+    
+    for (int f = 0; f <= FILES; f++) {
+        printf("%d;",f);
+        clock_t start, end;
+        char file[40];
+        sprintf(file, "../dane/datasets/plik%d.txt", f);
+        readWords(file);
+        int **path, *length, *cost;
+        path = (int**) malloc(K * sizeof(int*));
+        length = (int*) malloc(K * sizeof(int));
+        cost = (int*) malloc(K * sizeof(int));
+        for (int i = 0; i < K; i++) {
+            path[i] = (int*) malloc((2*s) * sizeof(int));
+            path[i][0] = rand()%n;
+            length[i] = 1;
+            cost[i] = l;
         }
-    }
-    multiPathHillClimber(path, length);
+        start = clock();
+        wiazkowy(path, length, cost);
 #pragma omp parallel for
-    for (int i = 0; i < K; i++){
-        cost[i] = calculateCost(path[i], length[i]);
-    }
-    wiazkowy(path, length, cost);
-#pragma omp parallel for
-    for (int i = 0; i < K; i++){
-        while (repairPath(path[i], length[i] != 0)) {
-            length[i]--;
+        for (int i = 0; i < K; i++){
+            while (repairPath(path[i], length[i] != 0)){
+                length[i]--;
+            }
         }
-    }
-    for (int i = 0; i < K; i++) {
-        printf("%d: ", i);
-        mark(path[i], length[i]);
-    }
+        multiPathHillClimber(path, length);
+#pragma omp parallel for
+        for (int i = 0; i < K; i++){
+            cost[i] = calculateCost(path[i], length[i]);
+        }
+        wiazkowy(path, length, cost);
+#pragma omp parallel for
+        for (int i = 0; i < K; i++){
+            while (repairPath(path[i], length[i] != 0)) {
+                length[i]--;
+            }
+        }
+        end = clock();
+        printf("%ld;", (end - start)/1000);
+        mark(path, length);
 
 #pragma omp parallel for
-    for (int i = 0; i < n; i++){
-        free(graph[i]);
-        free(words[i]);
-    }
+        for (int i = 0; i < n; i++){
+            free(graph[i]);
+            free(words[i]);
+        }
 #pragma omp parallel for
-    for (int i = 0; i < K; i++) {
-        free(path[i]);
+        for (int i = 0; i < K; i++) {
+            free(path[i]);
+        }
+        free(path);
+        free(length);
+        free(cost);
     }
-    free(path);
-    free(length);
-    free(cost);
-    free(graph);
-    free(words);
-
+        free(graph);
+        free(words);
 }
