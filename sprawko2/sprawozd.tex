@@ -88,6 +88,15 @@ Można zauważyć, że w przypadku instancji z błędami negatywnymi:
 L_2 \approx 0.31(7)*n+4,08(4)
 \end{equation}
 
+\section{Plusy}
+Niewątpliwym plusem tego rozwiązania jest wysoka odporność na złośliwe instancje. Odporność tak wynika z faktu iż algorytm ten składa się z kilku innych algorytmów, które w znacznym stopniu się uzupełniają i rekompensują swoje wady.
+Kolejnym plusem zaproponowanego rozwiązania jest jego duża elastyczność. Użytkownik może dowolnie sterować parametrami, które w jasny sposób wpływają na czas obliczeń oraz jakość końcowego rozwiązania. Jeśli zależy nam na szybkich obliczeniach możemy ustalić niewielkie wartości parametrów, jednakże jeśli bardziej cenimy jakość rozwiązań możemy zwiększyć ich wartość, należy jednak liczyć się z wydłużeniem czasu działania programu.
+Alogrytm ten można w znacznym stopniu zrównoleglić, co pozwoli wykonywać go w sposób efektywnych w systemach rozproszonych czy nawet na laptopie z wielordzeniowym procesorem.
+Rozwiązanie to jest podzielone na trzy etapy i w każdym z nich wykorzystywany jest inny algorytm. Ta modułowa budowa pozwala na stosunkowo łatwe wymienianie algorytmów stosowanych w poszczególnych etapach.
+\section{Minusy}
+Algroytm składa się z kilku etapów i w każdym z nich stosowany jest inny algorytm, dlatego, mimo determinizmu tego rozwiązania, niemalże niemożliwe jest przewidzenie bez dokładnej analizy jak zachowa się algorytm dla konkretnej instancji. Ciężko jest także wskazać klasy instancji dla których algorytm poradzi sobie dobrze, bądź źle.
+
+
 \section{Dalsze eksperymenty}
 
 Wyniki sugerują, że dałoby się zaproponować takie parametry algorytmu, by zoptymalizować czas wykonywania i odległość od sekwencji wejściowej.
