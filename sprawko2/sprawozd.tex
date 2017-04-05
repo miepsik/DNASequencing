@@ -4,6 +4,7 @@
 \usepackage[OT4]{fontenc} 
 \usepackage{graphicx,color} %include pdf's (and png's for raster graphics... avoid raster graphics!) 
 \usepackage{url} 
+\usepackage{pgfplotstable,filecontents}
 \usepackage[pdftex,hyperfootnotes=false,pdfborder={0 0 0}]{hyperref} %za wszystkimi pakietami; pdfborder nie wszedzie tak samo zaimplementowane bo specyfikacja nieprecyzyjna; pod miktex'em po prostu nie widac wtedy ramek
 
 
@@ -24,7 +25,7 @@ W tym celu zaproponowano następujący algorytm: sekwencja jest budowana za pomo
 %\section{Implementacja}
 \section{Wyniki}
 
-Pomiarów dokonano na %tu uzupełnij dane techniczne komp/proc.
+Pomiarów dokonano na procesorze intel i7 4 rdzeniowym taktowowanym z częstotliwością 3 GHz.
 Mierzono czas wykonania, długość sekwencji oraz liczbę wykorzystanych oligonukleotydów.
 Wyniki porównano według odległości euklidesowej długości sekwencji wynikowej $n_w$ od długości sekwencji wejściowej $n$:
 

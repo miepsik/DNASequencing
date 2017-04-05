@@ -5,7 +5,7 @@
 #include<unistd.h>
 #include<time.h>
 
-#define K 8
+#define K 4
 #define Z 5
 #define ITER 100
 #define FILES 52
@@ -300,7 +300,7 @@ void multiPathHillClimber(int **path, int *length){
 }
 
 void mark(int **path, int *length) {
-    int max = 0, total;
+    int max = 0, total, x;
     for (int j = 0; j < K; j++) {
         int nodes[n];
         for (int i = 0; i < n; i++)
@@ -313,9 +313,10 @@ void mark(int **path, int *length) {
         if (sum > max){
             max = sum;
             total = length[j];
+            x = calculateCost(path[j], length[j]) + l;
         }
     }
-    printf("%d;%d\n", total, max);
+    printf("%d;%d;%d\n", total, max, x);
 }
 
 int main() {
@@ -340,7 +341,7 @@ int main() {
         wiazkowy(path, length, cost);
 #pragma omp parallel for
         for (int i = 0; i < K; i++){
-            while (repairPath(path[i], length[i] != 0)){
+            while (repairPath(path[i], length[i]) != 0){
                 length[i]--;
             }
         }
@@ -352,7 +353,7 @@ int main() {
         wiazkowy(path, length, cost);
 #pragma omp parallel for
         for (int i = 0; i < K; i++){
-            while (repairPath(path[i], length[i] != 0)) {
+            while (repairPath(path[i], length[i]) != 0) {
                 length[i]--;
             }
         }
