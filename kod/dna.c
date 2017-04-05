@@ -316,11 +316,11 @@ void mark(int **path, int *length) {
             x = calculateCost(path[j], length[j]) + l;
         }
     }
-    printf("%d;%d;%d\n", total, max, x);
+    printf("%d;%d;%d;%d;%d\n", total, max, x, (100*max)/n, s-l+1-total);
 }
 
 int main() {
-    
+    printf("lp;ilość nukleotydów;l;długość;time[ms];użyte oligonukleotydy (z powtórzeniami);użyte oligonukleotydy;długość wynikowa;procent użytych;skoki\n");   
     for (int f = 0; f <= FILES; f++) {
         printf("%d;",f);
         clock_t start, end;
